@@ -1,0 +1,23 @@
+{
+  "name": "ophs-explore",
+  "version": "1.0.0",
+  "description": "A better course explorer for Orchard Park High School.",
+  "homepage": "https://github.com/program247365/ophs-explore#readme",
+  "bugs": {
+    "url": "https://github.com/program247365/ophs-explore/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/program247365/ophs-explore.git"
+  },
+  "license": "MIT",
+  "author": "Kevin B. Ridgway <k@kbr.sh>",
+  "type": "commonjs",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.5.0"
+  }
+}
