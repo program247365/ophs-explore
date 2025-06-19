@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OPHS Course Explorer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8B1538 0%, #A91B47 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #8B1538, #A91B47);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .handbook-link {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            text-decoration: none;
+            font-size: 1.1em;
+            font-weight: 600;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .handbook-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-container {
+            padding: 40px;
+            border-bottom: 3px solid #e0e0e0;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        select, input[type="number"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        select:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #8B1538;
+            box-shadow: 0 0 0 3px rgba(139, 21, 56, 0.1);
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .checkbox-item:hover {
+            background: #e9ecef;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .filter-summary {
+            background: linear-gradient(135deg, #8B1538, #A91B47);
+            color: white;
+            padding: 15px 25px;
+            margin: 20px 0;
+            border-radius: 10px;
+            font-size: 1.1em;
+        }
+
+        .courses-container {
+            padding: 40px;
+        }
+
+        .courses-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .courses-title {
+            color: #8B1538;
+            font-size: 2em;
+            font-weight: 600;
+        }
+
+        .course-count {
+            background: #8B1538;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+        }
+
+        .course-category {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .course-category.hidden {
+            display: none;
+        }
+
+        .category-title {
+            font-weight: 600;
+            color: #8B1538;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            border-bottom: 2px solid #f5e6ea;
+            padding-bottom: 5px;
+        }
+
+        .course-item {
+            margin-bottom: 12px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #8B1538;
+            transition: all 0.3s ease;
+        }
+
+        .course-item.hidden {
+            display: none;
+        }
+
+        .course-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .course-name {
+            font-weight: 600;
+            color: #8B1538;
+            margin-bottom: 6px;
+            font-size: 1.1em;
+        }
+
+        .course-details {
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .course-description {
+            margin-top: 8px;
+            padding: 8px 0;
+            font-style: italic;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .prerequisite {
+            color: #B8860B;
+            font-weight: 500;
+        }
+
+        .credits {
+            color: #8B1538;
+            font-weight: 500;
+        }
+
+        .grade-level {
+            color: #6B1229;
+            font-weight: 500;
+        }
+
+        .no-courses {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.2em;
+            background: #f5f5f5;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .clear-filters {
+            background: #ff9800;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .clear-filters:hover {
+            background: #f57c00;
+            transform: translateY(-2px);
+        }
+
+        .disclaimer {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 8px 15px;
+            text-align: center;
+            font-size: 0.9em;
+            border-radius: 0;
+            margin: 0;
+        }
+
+        .disclaimer strong {
+            color: #8B1538;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .form-container, .courses-container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .handbook-link {
+                position: static;
+                margin: 0 auto 20px auto;
+                font-size: 1em;
+                padding: 8px 12px;
+            }
+            
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+
+            .courses-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .disclaimer {
+                font-size: 0.8em;
+                padding: 6px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="disclaimer">
+        ⚠️ <strong>Unofficial Site</strong> - This course explorer is for reference only. Please verify all course information with your school counselor and the <a href="https://ophs.opschools.org/school-counseling/curriculum-handbook-ophs" target="_blank" rel="noopener noreferrer" style="color: #8B1538; text-decoration: underline;">official OPHS curriculum handbook</a>.
+    </div>
+    <div class="container">
+        <div class="header">
+            <a href="https://ophs.opschools.org/school-counseling/curriculum-handbook-ophs" class="handbook-link" target="_blank" rel="noopener noreferrer" title="View Official OPHS Curriculum Handbook">
+                📚 Course Handbook
+            </a>
+            <h1>🎓 OPHS Course Explorer</h1>
+            <p>Discover your academic pathway at Orchard Park High School</p>
+        </div>
+
+        <div class="form-container">
+            <div class="form-group">
+                <label for="gradeLevel">Current Grade Level:</label>
+                <select id="gradeLevel">
+                    <option value="">All Grades</option>
+                    <option value="9">9th Grade (Freshman)</option>
+                    <option value="10">10th Grade (Sophomore)</option>
+                    <option value="11">11th Grade (Junior)</option>
+                    <option value="12">12th Grade (Senior)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="diplomaType">Diploma Goal:</label>
+                <select id="diplomaType">
+                    <option value="">Any Diploma Type</option>
+                    <option value="regents">Regents Diploma</option>
+                    <option value="advanced">Advanced Regents Diploma</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="interests">Areas of Interest (check to filter):</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="art" name="interests" value="art">
+                        <label for="art">Art & Design</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="business" name="interests" value="business">
+                        <label for="business">Business & Marketing</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="english" name="interests" value="english">
+                        <label for="english">English & Literature</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="math" name="interests" value="math">
+                        <label for="math">Mathematics</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="music" name="interests" value="music">
+                        <label for="music">Music</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="science" name="interests" value="science">
+                        <label for="science">Science</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="social" name="interests" value="social">
+                        <label for="social">Social Studies</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="technology" name="interests" value="technology">
+                        <label for="technology">Technology & Engineering</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="language" name="interests" value="language">
+                        <label for="language">World Languages</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="health" name="interests" value="health">
+                        <label for="health">Health & Physical Education</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="academicLevel">Preferred Academic Challenge Level:</label>
+                <select id="academicLevel">
+                    <option value="">All Levels</option>
+                    <option value="standard">Standard Level</option>
+                    <option value="honors">Honors Level</option>
+                    <option value="ap">Advanced Placement (AP)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="prerequisites">Prerequisites:</label>
+                <select id="prerequisites">
+                    <option value="">All Courses</option>
+                    <option value="none">📚 Courses with No Prerequisites</option>
+                    <option value="has">📋 Courses with Prerequisites</option>
+                </select>
+            </div>
+
+            <div id="filterSummary" class="filter-summary" style="display: none;">
+                <strong>Active Filters:</strong> <span id="filterText"></span>
+                <button id="clearFilters" class="clear-filters" style="margin-left: 15px;">Clear All Filters</button>
+            </div>
+        </div>
+
+        <div class="courses-container">
+            <div class="courses-header">
+                <h2 class="courses-title">📚 Available Courses</h2>
+                <div class="course-count" id="courseCount">Loading courses...</div>
+            </div>
+            
+            <div id="noCourses" class="no-courses" style="display: none;">
+                <h3>No courses match your current filters</h3>
+                <p>Try adjusting your criteria or clearing some filters to see more options.</p>
+            </div>
+
+            <div id="allCourses"></div>
+        </div>
+    </div>
+
+    <script>
+        const courseData = {
+            art: {
+                title: "🎨 Art Department",
+                courses: [
+                    {
+                        name: "Studio in Art",
+                        credits: "½ unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "None (Required prerequisite for all other art courses)",
+                        level: "standard",
+                        description: "An introductory course exploring fundamental art concepts, techniques, and media. Students will develop basic skills in drawing, painting, and design while learning about art history and visual literacy. This foundational course is required for all advanced art courses."
+                    },
+                    {
+                        name: "Studio in Drawing and Painting I",
+                        credits: "½ unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "Studio in Art",
+                        level: "standard",
+                        description: "Students will explore various drawing and painting techniques using different media including pencil, charcoal, watercolor, and acrylic paint. Focus on observational drawing, color theory, composition, and developing personal artistic style."
+                    },
+                    {
+                        name: "Studio in Drawing and Painting II",
+                        credits: "½ unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "Studio in Art, Studio in Drawing & Painting I, and teacher recommendation",
+                        level: "standard"
+                    },
+                    {
+                        name: "Studio in Ceramics I",
+                        credits: "½ unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "Studio in Art",
+                        level: "standard"
+                    },
+                    {
+                        name: "Studio in Ceramics II",
+                        credits: "½ unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "Studio in Art, Studio in Ceramics I, and teacher recommendation",
+                        level: "standard"
+                    },
+                    {
+                        name: "Studio in Sculpture I",
+                        credits: "½ unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "Studio in Art",
+                        level: "standard"
+                    },
+                    {
+                        name: "Fine Art Photography",
+                        credits: "½ unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "Studio in Art",
+                        level: "standard"
+                    },
+                    {
+                        name: "Honors Art",
+                        credits: "1H unit",
+                        grades: "12",
+                        prerequisite: "Teacher recommendation plus three art courses (2D and 3D experiences)",
+                        level: "honors"
+                    },
+                    {
+                        name: "Interior Design",
+                        credits: "½ unit",
+                        grades: "10,11,12",
+                        prerequisite: "Studio in Art",
+                        level: "standard"
+                    },
+                    {
+                        name: "Art of the Western World",
+                        credits: "½ unit",
+                        grades: "11,12",
+                        prerequisite: "None",
+                        level: "standard"
+                    }
+                ]
+            },
+            business: {
+                title: "💼 Business & Marketing",
+                courses: [
+                    {
+                        name: "Personal Finance",
+                        credits: "½ unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "None (Fulfills graduation requirement)",
+                        level: "standard",
+                        description: "Essential life skills course covering budgeting, banking, credit, loans, insurance, taxes, and investment basics. Students learn practical money management skills for financial independence and success in adulthood."
+                    },
+                    {
+                        name: "Accounting Principles I",
+                        credits: "1 unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "None (College credit available)",
+                        level: "standard"
+                    },
+                    {
+                        name: "Accounting Principles II",
+                        credits: "1 unit",
+                        grades: "10,11,12",
+                        prerequisite: "Accounting Principles I",
+                        level: "standard"
+                    },
+                    {
+                        name: "Business Law",
+                        credits: "1 unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "None (College credit available)",
+                        level: "standard"
+                    },
+                    {
+                        name: "iComp I (Integrated Computers)",
+                        credits: "½ unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "None",
+                        level: "standard"
+                    },
+                    {
+                        name: "iComp II",
+                        credits: "½ unit",
+                        grades: "10,11,12",
+                        prerequisite: "iComp I (College credit available)",
+                        level: "standard"
+                    },
+                    {
+                        name: "Principles of Marketing",
+                        credits: "1 unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "None (College credit available)",
+                        level: "standard"
+                    },
+                    {
+                        name: "Sports Management",
+                        credits: "½ unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "None (College credit available)",
+                        level: "standard"
+                    },
+                    {
+                        name: "Entrepreneurship",
+                        credits: "½ unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "None (College credit available)",
+                        level: "standard"
+                    },
+                    {
+                        name: "Career Exploration Internship Program",
+                        credits: "½ unit",
+                        grades: "12",
+                        prerequisite: "Application required",
+                        level: "standard"
+                    }
+                ]
+            },
+            english: {
+                title: "📚 English Department",
+                courses: [
+                    {
+                        name: "English 9",
+                        credits: "1 unit",
+                        grades: "9",
+                        prerequisite: "None",
+                        level: "standard"
+                    },
+                    {
+                        name: "English 9 Honors",
+                        credits: "1H unit",
+                        grades: "9",
+                        prerequisite: "8th grade ELA teacher recommendation and summer reading",
+                        level: "honors"
+                    },
+                    {
+                        name: "English 10",
+                        credits: "1 unit",
+                        grades: "10",
+                        prerequisite: "9th grade English",
+                        level: "standard"
+                    },
+                    {
+                        name: "English 10 Honors",
+                        credits: "1H unit",
+                        grades: "10",
+                        prerequisite: "English 9 Honors or English 9 with teacher recommendation and summer assignment",
+                        level: "honors"
+                    },
+                    {
+                        name: "English 11 Regents",
+                        credits: "1 unit",
+                        grades: "11",
+                        prerequisite: "English 10",
+                        level: "standard"
+                    },
+                    {
+                        name: "AP English Language & Composition",
+                        credits: "1H unit",
+                        grades: "11",
+                        prerequisite: "English 10 Honors with teacher recommendation and summer reading",
+                        level: "ap",
+                        description: "College-level course focusing on rhetorical analysis, argument construction, and advanced composition skills. Students analyze nonfiction texts, develop sophisticated writing techniques, and prepare for the AP exam while earning potential college credit."
+                    },
+                    {
+                        name: "AP English Literature & Composition",
+                        credits: "1H unit",
+                        grades: "12",
+                        prerequisite: "English 11 Regents and teacher recommendation, or AP Language",
+                        level: "ap"
+                    },
+                    {
+                        name: "Creative Writing Workshop",
+                        credits: "½ unit",
+                        grades: "11,12",
+                        prerequisite: "English 11 and/or teacher recommendation",
+                        level: "standard"
+                    },
+                    {
+                        name: "Contemporary Authors",
+                        credits: "½ unit",
+                        grades: "11,12",
+                        prerequisite: "English 11 and/or teacher recommendation",
+                        level: "standard"
+                    },
+                    {
+                        name: "British Literature",
+                        credits: "½ unit",
+                        grades: "11,12",
+                        prerequisite: "English 11 and/or teacher recommendation",
+                        level: "standard"
+                    },
+                    {
+                        name: "Journalism",
+                        credits: "½ unit",
+                        grades: "11,12",
+                        prerequisite: "English 11 and/or teacher recommendation",
+                        level: "standard"
+                    }
+                ]
+            },
+            math: {
+                title: "📐 Mathematics Department",
+                courses: [
+                    {
+                        name: "Fundamentals of Algebra",
+                        credits: "1 unit",
+                        grades: "9",
+                        prerequisite: "Math 8",
+                        level: "standard"
+                    },
+                    {
+                        name: "Regents Algebra 1",
+                        credits: "1 unit",
+                        grades: "9,10",
+                        prerequisite: "Math 8",
+                        level: "standard"
+                    },
+                    {
+                        name: "Regents Geometry",
+                        credits: "1 unit",
+                        grades: "9,10,11",
+                        prerequisite: "Regents Algebra 1",
+                        level: "standard"
+                    },
+                    {
+                        name: "Regents Geometry Honors",
+                        credits: "1H unit",
+                        grades: "9,10",
+                        prerequisite: "Regents Algebra 1 and teacher recommendation",
+                        level: "honors"
+                    },
+                    {
+                        name: "Regents Algebra 2",
+                        credits: "1 unit",
+                        grades: "10,11,12",
+                        prerequisite: "Regents Geometry",
+                        level: "standard"
+                    },
+                    {
+                        name: "Regents Algebra 2 Honors",
+                        credits: "1H unit",
+                        grades: "10,11",
+                        prerequisite: "Honors Geometry",
+                        level: "honors"
+                    },
+                    {
+                        name: "Pre-Calculus",
+                        credits: "1H unit",
+                        grades: "11,12",
+                        prerequisite: "Regents Algebra 2 and teacher recommendation (College credit available)",
+                        level: "honors"
+                    },
+                    {
+                        name: "Calculus",
+                        credits: "1H unit",
+                        grades: "12",
+                        prerequisite: "Pre-Calculus (College credit available)",
+                        level: "honors"
+                    },
+                    {
+                        name: "AP Calculus BC",
+                        credits: "1H unit",
+                        grades: "12",
+                        prerequisite: "Pre-Calculus BC and teacher recommendation",
+                        level: "ap",
+                        description: "Advanced calculus course covering differential and integral calculus, including parametric, polar, and vector functions, and series. Students engage in college-level mathematical reasoning and problem-solving while preparing for the AP Calculus BC exam."
+                    },
+                    {
+                        name: "AP Statistics",
+                        credits: "1H unit",
+                        grades: "11,12",
+                        prerequisite: "Regents Algebra 2 and teacher recommendation",
+                        level: "ap"
+                    },
+                    {
+                        name: "College Statistics",
+                        credits: "1H unit",
+                        grades: "11,12",
+                        prerequisite: "Regents Algebra 2 and teacher recommendation",
+                        level: "honors"
+                    }
+                ]
+            },
+            science: {
+                title: "🔬 Science Department",
+                courses: [
+                    {
+                        name: "General Earth Science",
+                        credits: "1 unit",
+                        grades: "9",
+                        prerequisite: "Teacher/school counselor recommendation",
+                        level: "standard"
+                    },
+                    {
+                        name: "Earth and Space Sciences",
+                        credits: "1 unit",
+                        grades: "9,10,11",
+                        prerequisite: "8th grade math and science, teacher recommendation",
+                        level: "standard"
+                    },
+                    {
+                        name: "Life Science: Biology A",
+                        credits: "1 unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "Earth Science or Earth and Space Sciences",
+                        level: "standard"
+                    },
+                    {
+                        name: "Life Science: Biology B",
+                        credits: "1 unit",
+                        grades: "10,11,12",
+                        prerequisite: "Earth Science or Earth and Space Sciences with teacher recommendation",
+                        level: "standard"
+                    },
+                    {
+                        name: "General Chemistry",
+                        credits: "1 unit",
+                        grades: "11,12",
+                        prerequisite: "Earth and Space Sciences, Biology, teacher recommendation",
+                        level: "standard"
+                    },
+                    {
+                        name: "Regents Chemistry",
+                        credits: "1 unit",
+                        grades: "10,11,12",
+                        prerequisite: "Earth and Space Sciences, Algebra I, Geometry, Biology",
+                        level: "standard"
+                    },
+                    {
+                        name: "Advanced Chemistry",
+                        credits: "1H unit",
+                        grades: "11,12",
+                        prerequisite: "Earth and Space Sciences, Biology, Regents Chemistry, Geometry, teacher recommendation",
+                        level: "honors"
+                    },
+                    {
+                        name: "General Physics",
+                        credits: "1 unit",
+                        grades: "11,12",
+                        prerequisite: "Algebra I, Earth and Space Sciences, Biology, Chemistry, teacher recommendation",
+                        level: "standard"
+                    },
+                    {
+                        name: "Regents Physics",
+                        credits: "1 unit",
+                        grades: "11,12",
+                        prerequisite: "Earth and Space Sciences, Biology, Algebra II, Regents Chemistry",
+                        level: "standard"
+                    },
+                    {
+                        name: "AP Physics",
+                        credits: "1H unit",
+                        grades: "12",
+                        prerequisite: "Earth and Space Sciences, Biology, Regents Chemistry, Calculus (co-requisite)",
+                        level: "ap",
+                        description: "College-level physics course emphasizing inquiry-based learning and mathematical analysis. Students explore mechanics, thermodynamics, waves, electricity, and magnetism through laboratory investigations and theoretical problem-solving, preparing for the AP Physics exam."
+                    },
+                    {
+                        name: "Advanced Biology",
+                        credits: "1H unit",
+                        grades: "11,12",
+                        prerequisite: "Biology, Chemistry, Earth and Space Sciences Regents exams, teacher recommendation",
+                        level: "honors"
+                    },
+                    {
+                        name: "Genetics",
+                        credits: "½ unit",
+                        grades: "10,11,12",
+                        prerequisite: "Biology, Earth and Space Sciences, teacher recommendation",
+                        level: "standard"
+                    },
+                    {
+                        name: "Ecology",
+                        credits: "½ unit",
+                        grades: "10,11,12",
+                        prerequisite: "Earth and Space Sciences, Biology, teacher recommendation",
+                        level: "standard"
+                    },
+                    {
+                        name: "Astronomy",
+                        credits: "½ unit",
+                        grades: "10,11,12",
+                        prerequisite: "Earth and Space Sciences, Biology, teacher recommendation",
+                        level: "standard"
+                    }
+                ]
+            },
+            social: {
+                title: "🌍 Social Studies Department",
+                courses: [
+                    {
+                        name: "Global History 9 (Regents)",
+                        credits: "1 unit",
+                        grades: "9",
+                        prerequisite: "None",
+                        level: "standard"
+                    },
+                    {
+                        name: "Advanced World History 9",
+                        credits: "1H unit",
+                        grades: "9",
+                        prerequisite: "Middle school teacher recommendation, entrance exam, summer reading",
+                        level: "honors"
+                    },
+                    {
+                        name: "Global History 10",
+                        credits: "1 unit",
+                        grades: "10",
+                        prerequisite: "Global History 9",
+                        level: "standard"
+                    },
+                    {
+                        name: "AP World History 10",
+                        credits: "1H unit",
+                        grades: "10",
+                        prerequisite: "Advanced World History 9",
+                        level: "ap"
+                    },
+                    {
+                        name: "AP European History",
+                        credits: "1H unit",
+                        grades: "10,11,12",
+                        prerequisite: "Teacher recommendation",
+                        level: "ap"
+                    },
+                    {
+                        name: "U.S. History and Government",
+                        credits: "1 unit",
+                        grades: "11",
+                        prerequisite: "9th and 10th grade Social Studies",
+                        level: "standard"
+                    },
+                    {
+                        name: "AP United States History",
+                        credits: "1H unit",
+                        grades: "11",
+                        prerequisite: "Global History 10, teacher recommendation, AP prerequisite assignment",
+                        level: "ap"
+                    },
+                    {
+                        name: "Economics, the Enterprise System, & Finance",
+                        credits: "½ unit",
+                        grades: "12",
+                        prerequisite: "U.S. History and Government",
+                        level: "standard"
+                    },
+                    {
+                        name: "AP Macroeconomics",
+                        credits: "½H unit",
+                        grades: "12",
+                        prerequisite: "Regents Exam in U.S. History and Government and teacher recommendation",
+                        level: "ap"
+                    },
+                    {
+                        name: "Government",
+                        credits: "½ unit",
+                        grades: "12",
+                        prerequisite: "US History and Government",
+                        level: "standard"
+                    },
+                    {
+                        name: "AP U.S. Government & Politics",
+                        credits: "½H unit",
+                        grades: "12",
+                        prerequisite: "Regents Exam in U.S. History and Government and teacher recommendation",
+                        level: "ap"
+                    },
+                    {
+                        name: "Psychology",
+                        credits: "½ unit",
+                        grades: "10,11,12",
+                        prerequisite: "11th or 12th grade placement and/or teacher recommendation",
+                        level: "standard"
+                    }
+                ]
+            },
+            technology: {
+                title: "💻 Technology Education",
+                courses: [
+                    {
+                        name: "Design and Drawing for Production (DDP)",
+                        credits: "1 unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "None (Can apply to Art/Music requirement)",
+                        level: "standard"
+                    },
+                    {
+                        name: "Advanced DDP - PLTW",
+                        credits: "1H unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "Algebra I (College credit eligible)",
+                        level: "honors"
+                    },
+                    {
+                        name: "Computer Programming I",
+                        credits: "½ unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "Algebra I (pre/co-requisite)",
+                        level: "standard"
+                    },
+                    {
+                        name: "Computer Programming II",
+                        credits: "½ unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "Computer Programming I",
+                        level: "standard"
+                    },
+                    {
+                        name: "AP Computer Science A",
+                        credits: "1H unit",
+                        grades: "11,12",
+                        prerequisite: "Computer Programming II or AP Computer Science Principles",
+                        level: "ap",
+                        description: "Advanced programming course using Java to explore object-oriented programming, data structures, algorithms, and software design. Students develop complex programs while learning industry-standard coding practices and preparing for the AP Computer Science A exam."
+                    },
+                    {
+                        name: "AP Computer Science Principles",
+                        credits: "1H unit",
+                        grades: "10,11,12",
+                        prerequisite: "Programming I OR Algebra I and teacher recommendation",
+                        level: "ap"
+                    },
+                    {
+                        name: "Civil Engineering and Architecture (CEA)",
+                        credits: "1H unit",
+                        grades: "10,11,12",
+                        prerequisite: "Algebra I (College credit eligible)",
+                        level: "honors"
+                    },
+                    {
+                        name: "Computer Integrated Manufacturing (CIM)",
+                        credits: "1H unit",
+                        grades: "11,12",
+                        prerequisite: "DDP and Algebra I (College credit eligible)",
+                        level: "honors"
+                    },
+                    {
+                        name: "Digital Electronics",
+                        credits: "1H unit",
+                        grades: "11,12",
+                        prerequisite: "Algebra I (College credit eligible)",
+                        level: "honors"
+                    }
+                ]
+            },
+            music: {
+                title: "🎵 Music Department",
+                courses: [
+                    {
+                        name: "Concert Band",
+                        credits: "1 unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "Previous band experience or director approval",
+                        level: "standard"
+                    },
+                    {
+                        name: "Concert Choir",
+                        credits: "1 unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "None",
+                        level: "standard"
+                    },
+                    {
+                        name: "Jazz Ensemble",
+                        credits: "1 unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "Concert Band membership and audition",
+                        level: "standard"
+                    },
+                    {
+                        name: "Music Theory",
+                        credits: "½ unit",
+                        grades: "10,11,12",
+                        prerequisite: "Previous music experience recommended",
+                        level: "standard"
+                    },
+                    {
+                        name: "AP Music Theory",
+                        credits: "1H unit",
+                        grades: "11,12",
+                        prerequisite: "Music Theory and teacher recommendation",
+                        level: "ap"
+                    }
+                ]
+            },
+            language: {
+                title: "🌐 World Languages",
+                courses: [
+                    {
+                        name: "Spanish I",
+                        credits: "1 unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "None",
+                        level: "standard"
+                    },
+                    {
+                        name: "Spanish II",
+                        credits: "1 unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "Spanish I",
+                        level: "standard"
+                    },
+                    {
+                        name: "Spanish III",
+                        credits: "1 unit",
+                        grades: "10,11,12",
+                        prerequisite: "Spanish II",
+                        level: "standard"
+                    },
+                    {
+                        name: "Spanish IV",
+                        credits: "1H unit",
+                        grades: "11,12",
+                        prerequisite: "Spanish III",
+                        level: "honors"
+                    },
+                    {
+                        name: "AP Spanish Language",
+                        credits: "1H unit",
+                        grades: "12",
+                        prerequisite: "Spanish IV and teacher recommendation",
+                        level: "ap"
+                    },
+                    {
+                        name: "French I",
+                        credits: "1 unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "None",
+                        level: "standard"
+                    },
+                    {
+                        name: "French II",
+                        credits: "1 unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "French I",
+                        level: "standard"
+                    },
+                    {
+                        name: "French III",
+                        credits: "1 unit",
+                        grades: "10,11,12",
+                        prerequisite: "French II",
+                        level: "standard"
+                    },
+                    {
+                        name: "French IV",
+                        credits: "1H unit",
+                        grades: "11,12",
+                        prerequisite: "French III",
+                        level: "honors"
+                    }
+                ]
+            },
+            health: {
+                title: "💪 Health & Physical Education",
+                courses: [
+                    {
+                        name: "Health Education",
+                        credits: "½ unit",
+                        grades: "9,10,11,12",
+                        prerequisite: "None (Required for graduation)",
+                        level: "standard"
+                    },
+                    {
+                        name: "Physical Education",
+                        credits: "2 units",
+                        grades: "9,10,11,12",
+                        prerequisite: "None (Required for graduation)",
+                        level: "standard"
+                    },
+                    {
+                        name: "Advanced Sports & Fitness",
+                        credits: "½ unit",
+                        grades: "10,11,12",
+                        prerequisite: "Physical Education",
+                        level: "standard"
+                    },
+                    {
+                        name: "Sports Medicine",
+                        credits: "½ unit",
+                        grades: "11,12",
+                        prerequisite: "Health Education and Biology recommended",
+                        level: "standard"
+                    }
+                ]
+            }
+        };
+
+        // Store all courses for filtering
+        let allCoursesData = [];
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            renderAllCourses();
+            setupEventListeners();
+        });
+
+        function renderAllCourses() {
+            const allCoursesContainer = document.getElementById('allCourses');
+            const courseCount = document.getElementById('courseCount');
+            
+            // Clear existing content
+            allCoursesContainer.innerHTML = '';
+            allCoursesData = [];
+            
+            let totalCourses = 0;
+
+            // Render each department
+            Object.keys(courseData).forEach(department => {
+                const departmentData = courseData[department];
+                
+                // Create department container
+                const departmentDiv = document.createElement('div');
+                departmentDiv.className = 'course-category';
+                departmentDiv.dataset.department = department;
+                
+                const departmentTitle = document.createElement('h3');
+                departmentTitle.className = 'category-title';
+                departmentTitle.textContent = departmentData.title;
+                departmentDiv.appendChild(departmentTitle);
+                
+                // Add courses to this department
+                departmentData.courses.forEach(course => {
+                    const courseDiv = document.createElement('div');
+                    courseDiv.className = 'course-item';
+                    courseDiv.dataset.department = department;
+                    courseDiv.dataset.level = course.level;
+                    courseDiv.dataset.grades = course.grades;
+                    
+                    courseDiv.innerHTML = `
+                        <div class="course-name">${course.name}</div>
+                        <div class="course-details">
+                            <span class="credits">Credits: ${course.credits}</span> | 
+                            <span class="grade-level">Grades: ${course.grades}</span> | 
+                            <span class="prerequisite">Prerequisites: ${course.prerequisite}</span>
+                        </div>
+                        ${course.description ? `<div class="course-description">${course.description}</div>` : ''}
+                    `;
+                    
+                    departmentDiv.appendChild(courseDiv);
+                    
+                    // Store course data for filtering
+                    allCoursesData.push({
+                        element: courseDiv,
+                        department: department,
+                        level: course.level,
+                        grades: course.grades.split(','),
+                        name: course.name,
+                        ...course
+                    });
+                    
+                    totalCourses++;
+                });
+                
+                allCoursesContainer.appendChild(departmentDiv);
+            });
+            
+            // Update course count
+            courseCount.textContent = `${totalCourses} courses available`;
+        }
+
+                 function setupEventListeners() {
+             // Add event listeners to all filter controls
+             document.getElementById('gradeLevel').addEventListener('change', filterCourses);
+             document.getElementById('diplomaType').addEventListener('change', filterCourses);
+             document.getElementById('academicLevel').addEventListener('change', filterCourses);
+             document.getElementById('prerequisites').addEventListener('change', filterCourses);
+             
+             // Add event listeners to interest checkboxes
+             const interestCheckboxes = document.querySelectorAll('input[name="interests"]');
+             interestCheckboxes.forEach(checkbox => {
+                 checkbox.addEventListener('change', filterCourses);
+             });
+             
+             // Clear filters button
+             document.getElementById('clearFilters').addEventListener('click', clearAllFilters);
+         }
+
+                 function filterCourses() {
+             const gradeLevel = document.getElementById('gradeLevel').value;
+             const diplomaType = document.getElementById('diplomaType').value;
+             const academicLevel = document.getElementById('academicLevel').value;
+             const prerequisitesFilter = document.getElementById('prerequisites').value;
+             
+             // Get selected interests
+             const selectedInterests = Array.from(document.querySelectorAll('input[name="interests"]:checked'))
+                 .map(cb => cb.value);
+             
+             let visibleCourses = 0;
+             const departmentCounts = {};
+             
+             // Helper function to check if a course has no prerequisites
+             function hasNoPrerequisites(prerequisite) {
+                 const cleanPrereq = prerequisite.toLowerCase().trim();
+                 return cleanPrereq === 'none' || 
+                        cleanPrereq.startsWith('none (') ||
+                        cleanPrereq.includes('(required for graduation)') ||
+                        cleanPrereq.includes('(fulfills graduation requirement)');
+             }
+             
+             // Filter each course
+             allCoursesData.forEach(courseData => {
+                 let shouldShow = true;
+                 
+                 // Filter by grade level
+                 if (gradeLevel && !courseData.grades.includes(gradeLevel)) {
+                     shouldShow = false;
+                 }
+                 
+                 // Filter by academic level
+                 if (academicLevel && courseData.level !== academicLevel) {
+                     shouldShow = false;
+                 }
+                 
+                 // Filter by prerequisites
+                 if (prerequisitesFilter) {
+                     const courseHasNoPrereqs = hasNoPrerequisites(courseData.prerequisite);
+                     if (prerequisitesFilter === 'none' && !courseHasNoPrereqs) {
+                         shouldShow = false;
+                     } else if (prerequisitesFilter === 'has' && courseHasNoPrereqs) {
+                         shouldShow = false;
+                     }
+                 }
+                 
+                 // Filter by interests (department)
+                 if (selectedInterests.length > 0 && !selectedInterests.includes(courseData.department)) {
+                     shouldShow = false;
+                 }
+                
+                // Show/hide course
+                if (shouldShow) {
+                    courseData.element.classList.remove('hidden');
+                    visibleCourses++;
+                    
+                    // Count courses per department
+                    if (!departmentCounts[courseData.department]) {
+                        departmentCounts[courseData.department] = 0;
+                    }
+                    departmentCounts[courseData.department]++;
+                } else {
+                    courseData.element.classList.add('hidden');
+                }
+            });
+            
+            // Show/hide department containers based on whether they have visible courses
+            document.querySelectorAll('.course-category').forEach(category => {
+                const department = category.dataset.department;
+                if (departmentCounts[department] > 0) {
+                    category.classList.remove('hidden');
+                } else {
+                    category.classList.add('hidden');
+                }
+            });
+            
+            // Update course count
+            document.getElementById('courseCount').textContent = `${visibleCourses} courses available`;
+            
+            // Show/hide "no courses" message
+            const noCourses = document.getElementById('noCourses');
+            if (visibleCourses === 0) {
+                noCourses.style.display = 'block';
+            } else {
+                noCourses.style.display = 'none';
+            }
+            
+            // Update filter summary
+            updateFilterSummary();
+        }
+
+                 function updateFilterSummary() {
+             const gradeLevel = document.getElementById('gradeLevel').value;
+             const diplomaType = document.getElementById('diplomaType').value;
+             const academicLevel = document.getElementById('academicLevel').value;
+             const prerequisitesFilter = document.getElementById('prerequisites').value;
+             const selectedInterests = Array.from(document.querySelectorAll('input[name="interests"]:checked'))
+                 .map(cb => cb.nextElementSibling.textContent);
+             
+             const activeFilters = [];
+             
+             if (gradeLevel) {
+                 activeFilters.push(`Grade ${gradeLevel}`);
+             }
+             if (diplomaType) {
+                 activeFilters.push(diplomaType === 'regents' ? 'Regents Diploma' : 'Advanced Regents Diploma');
+             }
+             if (academicLevel) {
+                 const levelNames = {
+                     'standard': 'Standard Level',
+                     'honors': 'Honors Level',
+                     'ap': 'Advanced Placement (AP)'
+                 };
+                 activeFilters.push(levelNames[academicLevel]);
+             }
+             if (prerequisitesFilter) {
+                 const prereqNames = {
+                     'none': 'No Prerequisites Required',
+                     'has': 'Has Prerequisites'
+                 };
+                 activeFilters.push(prereqNames[prerequisitesFilter]);
+             }
+             if (selectedInterests.length > 0) {
+                 activeFilters.push(`Interests: ${selectedInterests.join(', ')}`);
+             }
+            
+            const filterSummary = document.getElementById('filterSummary');
+            const filterText = document.getElementById('filterText');
+            
+            if (activeFilters.length > 0) {
+                filterText.textContent = activeFilters.join(' • ');
+                filterSummary.style.display = 'block';
+            } else {
+                filterSummary.style.display = 'none';
+            }
+        }
+
+                 function clearAllFilters() {
+             // Reset all form controls
+             document.getElementById('gradeLevel').value = '';
+             document.getElementById('diplomaType').value = '';
+             document.getElementById('academicLevel').value = '';
+             document.getElementById('prerequisites').value = '';
+             
+             // Uncheck all interest checkboxes
+             document.querySelectorAll('input[name="interests"]').forEach(cb => {
+                 cb.checked = false;
+             });
+            
+            // Show all courses
+            allCoursesData.forEach(courseData => {
+                courseData.element.classList.remove('hidden');
+            });
+            
+            // Show all departments
+            document.querySelectorAll('.course-category').forEach(category => {
+                category.classList.remove('hidden');
+            });
+            
+            // Update course count
+            document.getElementById('courseCount').textContent = `${allCoursesData.length} courses available`;
+            
+            // Hide "no courses" message
+            document.getElementById('noCourses').style.display = 'none';
+            
+            // Hide filter summary
+            document.getElementById('filterSummary').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
