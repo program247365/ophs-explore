@@ -316,6 +316,165 @@
             display: none !important;
         }
 
+        .selected-courses-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 2px solid #4caf50;
+        }
+
+        .selected-courses-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e8f5e8;
+        }
+
+        .selected-courses-title {
+            color: #4caf50;
+            font-size: 1.8em;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .selected-count {
+            background: #4caf50;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 1em;
+        }
+
+        .copy-clipboard-btn {
+            background: linear-gradient(135deg, #4caf50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .copy-clipboard-btn:hover {
+            background: linear-gradient(135deg, #45a049, #3d8b40);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .copy-clipboard-btn:active {
+            transform: translateY(0);
+        }
+
+        .copy-clipboard-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .selected-course-item {
+            background: #f8fff8;
+            border: 1px solid #4caf50;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .selected-course-item:hover {
+            background: #e8f5e8;
+            transform: translateX(5px);
+        }
+
+        .selected-course-title {
+            color: #2e7d32;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .selected-course-meta {
+            color: #666;
+            font-size: 0.9em;
+            margin-right: 15px;
+        }
+
+        .remove-course-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .remove-course-btn:hover {
+            background: #d32f2f;
+            transform: scale(1.05);
+        }
+
+        .empty-selection {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px dashed #ddd;
+        }
+
+        .course-card.selected {
+            border-color: #4caf50;
+            background: #f8fff8;
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.2);
+        }
+
+        .course-card.selected:hover {
+            border-color: #45a049;
+        }
+
+        .course-selection-indicator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .course-card.selected .course-selection-indicator {
+            background: #4caf50;
+            border-color: #4caf50;
+            color: white;
+        }
+
+        .copy-success {
+            background: linear-gradient(135deg, #2e7d32, #388e3c) !important;
+        }
+
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
@@ -348,6 +507,27 @@
             .disclaimer {
                 font-size: 0.8em;
                 padding: 6px 10px;
+            }
+
+            .selected-courses-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .copy-clipboard-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .selected-course-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .selected-course-meta {
+                margin-right: 0;
             }
         }
     </style>
@@ -425,6 +605,24 @@
             </div>
         </div>
 
+        <div class="selected-courses-container" id="selectedCoursesContainer" style="display: none;">
+            <div class="selected-courses-header">
+                <h2 class="selected-courses-title">📚 Selected Courses</h2>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div class="selected-count" id="selectedCount">0 courses selected</div>
+                    <button id="copyClipboardBtn" class="copy-clipboard-btn" disabled>
+                        📋 Copy Course List
+                    </button>
+                </div>
+            </div>
+            
+            <div id="selectedCourses">
+                <div class="empty-selection" id="emptySelection">
+                    Click on course cards below to select them for your schedule planning
+                </div>
+            </div>
+        </div>
+
         <div class="courses-container">
             <div class="courses-header">
                 <h2 class="courses-title">📚 Available Courses</h2>
@@ -444,6 +642,7 @@
         let courses = [];
         let departments = new Set();
         let interestAreas = new Set();
+        let selectedCourses = new Set();
 
         // Load course data from JSON file
         async function loadCourseData() {
@@ -589,6 +788,7 @@
             const diplomaTypeText = course.diploma_types.join(', ');
             
             card.innerHTML = `
+                <div class="course-selection-indicator">+</div>
                 <div class="course-header">
                     <h3 class="course-title">${course.title}</h3>
                 </div>
@@ -606,6 +806,20 @@
                 </div>
             `;
             
+            // Add click handler for course selection
+            card.addEventListener('click', (e) => {
+                // Prevent selection when clicking on tags (which might have their own functionality)
+                if (e.target.classList.contains('tag')) return;
+                
+                toggleCourseSelection(course.id);
+            });
+            
+            // Update selection state if this course is already selected
+            if (selectedCourses.has(course.id)) {
+                card.classList.add('selected');
+                card.querySelector('.course-selection-indicator').textContent = '✓';
+            }
+            
             return card;
         }
 
@@ -615,6 +829,7 @@
             document.getElementById('academicLevel').addEventListener('change', filterCourses);
             document.getElementById('prerequisites').addEventListener('change', filterCourses);
             document.getElementById('clearFilters').addEventListener('click', clearAllFilters);
+            document.getElementById('copyClipboardBtn').addEventListener('click', copyCoursesToClipboard);
             
             // Add event listeners to department checkboxes
             document.querySelectorAll('input[name="departments"]').forEach(checkbox => {
@@ -785,42 +1000,151 @@
            }
        }
 
-       function clearAllFilters() {
-           // Reset all form controls
-           document.getElementById('gradeLevel').value = '';
-           document.getElementById('diplomaType').value = '';
-           document.getElementById('academicLevel').value = '';
-           document.getElementById('prerequisites').value = '';
+               function clearAllFilters() {
+            // Reset all form controls
+            document.getElementById('gradeLevel').value = '';
+            document.getElementById('diplomaType').value = '';
+            document.getElementById('academicLevel').value = '';
+            document.getElementById('prerequisites').value = '';
+            
+            // Uncheck all department checkboxes
+            document.querySelectorAll('input[name="departments"]').forEach(cb => {
+                cb.checked = false;
+            });
+            
+            // Uncheck all interest checkboxes
+            document.querySelectorAll('input[name="interests"]').forEach(cb => {
+                cb.checked = false;
+            });
            
-           // Uncheck all department checkboxes
-           document.querySelectorAll('input[name="departments"]').forEach(cb => {
-               cb.checked = false;
+           // Show all courses
+           document.querySelectorAll('.course-card').forEach(card => {
+               card.classList.remove('hidden');
            });
            
-           // Uncheck all interest checkboxes
-           document.querySelectorAll('input[name="interests"]').forEach(cb => {
-               cb.checked = false;
+           // Show all departments
+           document.querySelectorAll('.department-section').forEach(section => {
+               section.classList.remove('hidden');
            });
-          
-          // Show all courses
-          document.querySelectorAll('.course-card').forEach(card => {
-              card.classList.remove('hidden');
-          });
-          
-          // Show all departments
-          document.querySelectorAll('.department-section').forEach(section => {
-              section.classList.remove('hidden');
-          });
-          
-          // Update course count
-          document.getElementById('courseCount').textContent = `${courses.length} courses available`;
-          
-          // Hide "no courses" message
-          document.getElementById('noCourses').style.display = 'none';
-          
-          // Hide filter summary
-          document.getElementById('filterSummary').style.display = 'none';
-      }
+           
+           // Update course count
+           document.getElementById('courseCount').textContent = `${courses.length} courses available`;
+           
+           // Hide "no courses" message
+           document.getElementById('noCourses').style.display = 'none';
+           
+           // Hide filter summary
+           document.getElementById('filterSummary').style.display = 'none';
+       }
+
+       function toggleCourseSelection(courseId) {
+           if (selectedCourses.has(courseId)) {
+               selectedCourses.delete(courseId);
+           } else {
+               selectedCourses.add(courseId);
+           }
+           
+           updateCourseSelectionUI(courseId);
+           updateSelectedCoursesDisplay();
+       }
+
+       function updateCourseSelectionUI(courseId) {
+           const courseCard = document.querySelector(`[data-course-id="${courseId}"]`);
+           if (!courseCard) return;
+           
+           const indicator = courseCard.querySelector('.course-selection-indicator');
+           
+           if (selectedCourses.has(courseId)) {
+               courseCard.classList.add('selected');
+               indicator.textContent = '✓';
+           } else {
+               courseCard.classList.remove('selected');
+               indicator.textContent = '+';
+           }
+       }
+
+       function updateSelectedCoursesDisplay() {
+           const selectedCoursesContainer = document.getElementById('selectedCoursesContainer');
+           const selectedCoursesDiv = document.getElementById('selectedCourses');
+           const selectedCountDiv = document.getElementById('selectedCount');
+           const copyBtn = document.getElementById('copyClipboardBtn');
+           const emptySelection = document.getElementById('emptySelection');
+           
+           const selectedCount = selectedCourses.size;
+           
+           // Update count
+           selectedCountDiv.textContent = `${selectedCount} course${selectedCount !== 1 ? 's' : ''} selected`;
+           
+           // Show/hide container
+           if (selectedCount > 0) {
+               selectedCoursesContainer.style.display = 'block';
+               emptySelection.style.display = 'none';
+               copyBtn.disabled = false;
+           } else {
+               selectedCoursesContainer.style.display = 'none';
+               copyBtn.disabled = true;
+               return;
+           }
+           
+           // Clear and rebuild selected courses list
+           selectedCoursesDiv.innerHTML = '';
+           
+           selectedCourses.forEach(courseId => {
+               const course = courses.find(c => c.id === courseId);
+               if (!course) return;
+               
+               const selectedItem = document.createElement('div');
+               selectedItem.className = 'selected-course-item';
+               
+               const gradeText = course.grade_levels.join(', ');
+               const academicLevelText = Array.isArray(course.academic_levels) ? course.academic_levels.join(', ') : course.academic_levels;
+               
+               selectedItem.innerHTML = `
+                   <div class="selected-course-title">${course.title}</div>
+                   <div class="selected-course-meta">${course.credits} credit${course.credits !== 1 ? 's' : ''} • Grade${course.grade_levels.length > 1 ? 's' : ''} ${gradeText} • ${academicLevelText}</div>
+                   <button class="remove-course-btn" onclick="toggleCourseSelection('${courseId}')" title="Remove from selection">✕</button>
+               `;
+               
+               selectedCoursesDiv.appendChild(selectedItem);
+           });
+       }
+
+       async function copyCoursesToClipboard() {
+           const copyBtn = document.getElementById('copyClipboardBtn');
+           
+           if (selectedCourses.size === 0) return;
+           
+           // Get selected course titles
+           const courseTitles = Array.from(selectedCourses)
+               .map(courseId => {
+                   const course = courses.find(c => c.id === courseId);
+                   return course ? course.title : '';
+               })
+               .filter(title => title)
+               .sort();
+           
+           const textToCopy = courseTitles.join('\n');
+           
+           try {
+               await navigator.clipboard.writeText(textToCopy);
+               
+               // Show success feedback
+               const originalText = copyBtn.innerHTML;
+               copyBtn.innerHTML = '✅ Copied!';
+               copyBtn.classList.add('copy-success');
+               
+               setTimeout(() => {
+                   copyBtn.innerHTML = originalText;
+                   copyBtn.classList.remove('copy-success');
+               }, 2000);
+               
+           } catch (err) {
+               console.error('Failed to copy to clipboard:', err);
+               
+               // Fallback: show alert with text to copy manually
+               alert('Copy this list manually:\n\n' + textToCopy);
+           }
+       }
 
       // Initialize the application
       document.addEventListener('DOMContentLoaded', loadCourseData);
