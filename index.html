@@ -32,6 +32,7 @@
             color: white;
             padding: 30px;
             text-align: center;
+            position: relative;
         }
 
         .header h1 {
@@ -43,6 +44,31 @@
         .header p {
             font-size: 1.1em;
             opacity: 0.9;
+        }
+
+        .handbook-link {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            text-decoration: none;
+            font-size: 1.1em;
+            font-weight: 600;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .handbook-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         .form-container {
@@ -245,6 +271,13 @@
                 font-size: 2em;
             }
             
+            .handbook-link {
+                position: static;
+                margin: 0 auto 20px auto;
+                font-size: 1em;
+                padding: 8px 12px;
+            }
+            
             .checkbox-group {
                 grid-template-columns: 1fr;
             }
@@ -259,6 +292,9 @@
 <body>
     <div class="container">
         <div class="header">
+            <a href="docs/course-handbook.pdf" class="handbook-link" target="_blank" title="View Full Course Handbook">
+                📚 Course Handbook
+            </a>
             <h1>🎓 OPHS Course Explorer</h1>
             <p>Discover your academic pathway at Orchard Park High School</p>
         </div>
