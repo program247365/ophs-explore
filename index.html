@@ -121,11 +121,16 @@
             border-radius: 10px;
             transition: all 0.3s ease;
             cursor: pointer;
+            user-select: none;
         }
 
         .checkbox-item:hover {
             background: #e9ecef;
             transform: translateY(-2px);
+        }
+
+        .checkbox-item:active {
+            transform: translateY(0);
         }
 
         .checkbox-item input[type="checkbox"] {
@@ -389,6 +394,13 @@
             </div>
 
             <div class="form-group">
+                <label for="interests">Interest Areas (check to filter):</label>
+                <div class="checkbox-group" id="interestCheckboxes">
+                    <!-- Will be populated dynamically -->
+                </div>
+            </div>
+
+            <div class="form-group">
                 <label for="academicLevel">Preferred Academic Challenge Level:</label>
                 <select id="academicLevel">
                     <option value="">All Levels</option>
@@ -431,6 +443,7 @@
     <script>
         let courses = [];
         let departments = new Set();
+        let interestAreas = new Set();
 
         // Load course data from JSON file
         async function loadCourseData() {
@@ -439,12 +452,18 @@
                 const data = await response.json();
                 courses = data.courses;
                 
-                // Extract unique departments
+                // Extract unique departments and interest areas
                 courses.forEach(course => {
                     departments.add(course.department);
+                    if (course.interest_areas) {
+                        course.interest_areas.forEach(interest => {
+                            interestAreas.add(interest);
+                        });
+                    }
                 });
                 
                 setupDepartmentCheckboxes();
+                setupInterestCheckboxes();
                 renderCourses();
                 setupEventListeners();
                 
@@ -472,6 +491,50 @@
                 const label = document.createElement('label');
                 label.htmlFor = checkbox.id;
                 label.textContent = dept;
+                
+                // Make the entire area clickable
+                checkboxItem.addEventListener('click', (e) => {
+                    // Prevent double-triggering if clicking directly on checkbox or label
+                    if (e.target === checkbox || e.target === label) {
+                        return;
+                    }
+                    checkbox.checked = !checkbox.checked;
+                    filterCourses();
+                });
+                
+                checkboxItem.appendChild(checkbox);
+                checkboxItem.appendChild(label);
+                container.appendChild(checkboxItem);
+            });
+        }
+
+        function setupInterestCheckboxes() {
+            const container = document.getElementById('interestCheckboxes');
+            const sortedInterests = Array.from(interestAreas).sort();
+            
+            sortedInterests.forEach(interest => {
+                const checkboxItem = document.createElement('div');
+                checkboxItem.className = 'checkbox-item';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `interest-${interest.replace(/\s+/g, '-').toLowerCase()}`;
+                checkbox.name = 'interests';
+                checkbox.value = interest;
+                
+                const label = document.createElement('label');
+                label.htmlFor = checkbox.id;
+                label.textContent = interest;
+                
+                // Make the entire area clickable
+                checkboxItem.addEventListener('click', (e) => {
+                    // Prevent double-triggering if clicking directly on checkbox or label
+                    if (e.target === checkbox || e.target === label) {
+                        return;
+                    }
+                    checkbox.checked = !checkbox.checked;
+                    filterCourses();
+                });
                 
                 checkboxItem.appendChild(checkbox);
                 checkboxItem.appendChild(label);
@@ -557,6 +620,11 @@
             document.querySelectorAll('input[name="departments"]').forEach(checkbox => {
                 checkbox.addEventListener('change', filterCourses);
             });
+            
+            // Add event listeners to interest checkboxes
+            document.querySelectorAll('input[name="interests"]').forEach(checkbox => {
+                checkbox.addEventListener('change', filterCourses);
+            });
         }
 
         function filterCourses() {
@@ -566,6 +634,9 @@
             const prerequisitesFilter = document.getElementById('prerequisites').value;
             
             const selectedDepartments = Array.from(document.querySelectorAll('input[name="departments"]:checked'))
+                .map(cb => cb.value);
+            
+            const selectedInterests = Array.from(document.querySelectorAll('input[name="interests"]:checked'))
                 .map(cb => cb.value);
             
             let visibleCourses = 0;
@@ -618,6 +689,16 @@
                     shouldShow = false;
                 }
                 
+                // Filter by interest areas
+                if (selectedInterests.length > 0) {
+                    const hasMatchingInterest = selectedInterests.some(interest => 
+                        course.interest_areas && course.interest_areas.includes(interest)
+                    );
+                    if (!hasMatchingInterest) {
+                        shouldShow = false;
+                    }
+                }
+                
                 // Show/hide course
                 if (shouldShow) {
                     card.classList.remove('hidden');
@@ -665,6 +746,9 @@
             const selectedDepartments = Array.from(document.querySelectorAll('input[name="departments"]:checked'))
                 .map(cb => cb.nextElementSibling.textContent);
             
+            const selectedInterests = Array.from(document.querySelectorAll('input[name="interests"]:checked'))
+                .map(cb => cb.nextElementSibling.textContent);
+            
             const activeFilters = [];
             
             if (gradeLevel) {
@@ -685,6 +769,9 @@
             }
             if (selectedDepartments.length > 0) {
                 activeFilters.push(`Departments: ${selectedDepartments.join(', ')}`);
+            }
+            if (selectedInterests.length > 0) {
+                activeFilters.push(`Interests: ${selectedInterests.join(', ')}`);
             }
            
            const filterSummary = document.getElementById('filterSummary');
@@ -707,6 +794,11 @@
            
            // Uncheck all department checkboxes
            document.querySelectorAll('input[name="departments"]').forEach(cb => {
+               cb.checked = false;
+           });
+           
+           // Uncheck all interest checkboxes
+           document.querySelectorAll('input[name="interests"]').forEach(cb => {
                cb.checked = false;
            });
           
