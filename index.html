@@ -1078,35 +1078,37 @@
            // Show/hide container
            if (selectedCount > 0) {
                selectedCoursesContainer.style.display = 'block';
-               emptySelection.style.display = 'none';
                copyBtn.disabled = false;
+               
+               // Clear and rebuild selected courses list - hide empty state
+               selectedCoursesDiv.innerHTML = '';
+               
+               // Add each selected course
+               selectedCourses.forEach(courseId => {
+                   const course = courses.find(c => c.id === courseId);
+                   if (!course) return;
+                   
+                   const selectedItem = document.createElement('div');
+                   selectedItem.className = 'selected-course-item';
+                   
+                   const gradeText = course.grade_levels.join(', ');
+                   const academicLevelText = Array.isArray(course.academic_levels) ? course.academic_levels.join(', ') : course.academic_levels;
+                   
+                   selectedItem.innerHTML = `
+                       <div class="selected-course-title">${course.title}</div>
+                       <div class="selected-course-meta">${course.credits} credit${course.credits !== 1 ? 's' : ''} • Grade${course.grade_levels.length > 1 ? 's' : ''} ${gradeText} • ${academicLevelText}</div>
+                       <button class="remove-course-btn" onclick="toggleCourseSelection('${courseId}')" title="Remove from selection">✕</button>
+                   `;
+                   
+                   selectedCoursesDiv.appendChild(selectedItem);
+               });
            } else {
                selectedCoursesContainer.style.display = 'none';
                copyBtn.disabled = true;
-               return;
+               
+               // Reset to empty state
+               selectedCoursesDiv.innerHTML = '<div class="empty-selection" id="emptySelection">Click on course cards below to select them for your schedule planning</div>';
            }
-           
-           // Clear and rebuild selected courses list
-           selectedCoursesDiv.innerHTML = '';
-           
-           selectedCourses.forEach(courseId => {
-               const course = courses.find(c => c.id === courseId);
-               if (!course) return;
-               
-               const selectedItem = document.createElement('div');
-               selectedItem.className = 'selected-course-item';
-               
-               const gradeText = course.grade_levels.join(', ');
-               const academicLevelText = Array.isArray(course.academic_levels) ? course.academic_levels.join(', ') : course.academic_levels;
-               
-               selectedItem.innerHTML = `
-                   <div class="selected-course-title">${course.title}</div>
-                   <div class="selected-course-meta">${course.credits} credit${course.credits !== 1 ? 's' : ''} • Grade${course.grade_levels.length > 1 ? 's' : ''} ${gradeText} • ${academicLevelText}</div>
-                   <button class="remove-course-btn" onclick="toggleCourseSelection('${courseId}')" title="Remove from selection">✕</button>
-               `;
-               
-               selectedCoursesDiv.appendChild(selectedItem);
-           });
        }
 
        async function copyCoursesToClipboard() {
