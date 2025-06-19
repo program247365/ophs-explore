@@ -258,6 +258,21 @@
             transform: translateY(-2px);
         }
 
+        .disclaimer {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 8px 15px;
+            text-align: center;
+            font-size: 0.9em;
+            border-radius: 0;
+            margin: 0;
+        }
+
+        .disclaimer strong {
+            color: #8B1538;
+        }
+
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
@@ -286,10 +301,18 @@
                 flex-direction: column;
                 text-align: center;
             }
+
+            .disclaimer {
+                font-size: 0.8em;
+                padding: 6px 10px;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="disclaimer">
+        ⚠️ <strong>Unofficial Site</strong> - This course explorer is for reference only. Please verify all course information with your school counselor and the <a href="https://ophs.opschools.org/school-counseling/curriculum-handbook-ophs" target="_blank" rel="noopener noreferrer" style="color: #8B1538; text-decoration: underline;">official OPHS curriculum handbook</a>.
+    </div>
     <div class="container">
         <div class="header">
             <a href="https://ophs.opschools.org/school-counseling/curriculum-handbook-ophs" class="handbook-link" target="_blank" rel="noopener noreferrer" title="View Official OPHS Curriculum Handbook">
