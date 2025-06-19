@@ -184,6 +184,7 @@
             margin-bottom: 20px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
+            position: relative;
         }
 
         .course-card:hover {
@@ -463,6 +464,7 @@
             transition: all 0.3s ease;
             font-size: 14px;
             font-weight: bold;
+            opacity: 1;
         }
 
         .course-card.selected .course-selection-indicator {
@@ -605,7 +607,7 @@
             </div>
         </div>
 
-        <div class="selected-courses-container" id="selectedCoursesContainer" style="display: none;">
+        <div class="selected-courses-container" id="selectedCoursesContainer">
             <div class="selected-courses-header">
                 <h2 class="selected-courses-title">📚 Selected Courses</h2>
                 <div style="display: flex; align-items: center; gap: 15px;">
@@ -1075,9 +1077,8 @@
            // Update count
            selectedCountDiv.textContent = `${selectedCount} course${selectedCount !== 1 ? 's' : ''} selected`;
            
-           // Show/hide container
+           // Update UI based on selection count
            if (selectedCount > 0) {
-               selectedCoursesContainer.style.display = 'block';
                copyBtn.disabled = false;
                
                // Clear and rebuild selected courses list - hide empty state
@@ -1103,7 +1104,6 @@
                    selectedCoursesDiv.appendChild(selectedItem);
                });
            } else {
-               selectedCoursesContainer.style.display = 'none';
                copyBtn.disabled = true;
                
                // Reset to empty state
